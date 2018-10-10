@@ -22,3 +22,5 @@ When `queue.Push()` is used, it pushes the element
 located at `queue.GetLength()` in `slice` to the queue.
 Similarly, when `queue.Pop()` is used, it pops the first element out of queue
 and set it to `queue.GetLength()`.
+
+Heap must be used with lock in multi-threading context. 
