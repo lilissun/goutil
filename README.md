@@ -151,6 +151,7 @@ func (docs *Documents) MoveToNext() {
 }
 
 // batches is []*Documents
+// and batches[i].Documents are sorted by score
 queue := NewPriorityQueue(
     batches, len(batches),
     func(i, j int) bool {
