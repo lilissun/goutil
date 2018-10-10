@@ -74,6 +74,6 @@ When `queue.Push()` is used, it pushes the element
 located at `queue.GetLength()` in `slice` to the queue.
 Similarly, when `queue.Pop()` is used, it pops the first element out of queue
 and puts the element to the position `queue.GetLength()` in `slice`.
-Moreover, its memory space must be re-allocated before the initialization of the queue.
+Moreover, its memory space must be pre-allocated before the initialization of the queue.
 
 Heap must be used with lock in multi-threading context.
