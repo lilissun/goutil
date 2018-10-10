@@ -64,14 +64,14 @@ func (pq *PriorityQueue) Update(item *Item, value string, priority int) {
 }
 ```
 
-This `PriorityQueue` implementation is better than the official one in the sense that
+Our `PriorityQueue` implementation is better than the official one in the sense that
 the users do not need to define a custom type with `heap.Interface`.
 Meanwhile, the comparison function and its targets is defined
 based on the actual type held in `slice`.
 Thus, we do not need to rewrite the whole `PriorityQueue`
 repeatedly for different element types.
 
-On the other hand, this `PriorityQueue` implementation is not self-contained.
+On the other hand, our `PriorityQueue` implementation is not self-contained.
 The memory space of `slice` must be pre-allocated before the initialization of the queue.
 It also means that `slice` cannot be dynamically extended to a larger size after the queue is built.
 (In this case, it is recommended to create a new `PriorityQueue` with the extended `slice`.)
