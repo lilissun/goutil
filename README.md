@@ -3,10 +3,10 @@
 This project aims to improve the user experience
 of some native functions and structures in Go standard libraries.
 
-## Heap
+## PriorityQueue
 
-Heap is implemented following the `sort.Slice(...)` interface.
-It takes a slice as its full storage space and a length as its currently filled length.
+Our `PriorityQueue` takes a slice as its full storage space
+and a length as its currently filled length.
 It also accepts a comparison function less which is operated on the slice.
 Notice that the slice cannot be appended in size as it will create a new slice object,
 which voids the less comparison function.
