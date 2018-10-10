@@ -11,7 +11,9 @@ It also accepts a comparison function less which is operated on the slice.
 Notice that the slice cannot be appended in size as it will create a new slice object,
 which voids the less comparison function.
 
-Officially, the Priority Queue is implemented as follows.
+Officially,
+the [Priority Queue](https://golang.org/pkg/container/heap/#example__priorityQueue)
+is implemented as follows.
 
 ```go
 // An Item is something we manage in a priority queue.
