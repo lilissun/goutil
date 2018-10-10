@@ -69,7 +69,7 @@ based on the actual type held in the slice.
 Thus, we do not need to rewrite the whole `PriorityQueue`
 repeatedly for different element types.
 
-On the other hand, the structure is not self-contained.
+On the other hand, this `PriorityQueue` implementation is not self-contained.
 When `queue.Push()` is used, it pushes the element
 located at `queue.GetLength()` in `slice` to the queue.
 Similarly, when `queue.Pop()` is used, it pops the first element out of queue
