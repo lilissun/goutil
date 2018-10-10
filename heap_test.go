@@ -1,6 +1,7 @@
 package goutil
 
 import (
+	"math"
 	"sort"
 	"testing"
 )
@@ -38,7 +39,7 @@ func (docs *Documents) GetDocument() *Document {
 
 func (docs *Documents) GetScore() float64 {
 	if docs.IsEmpty() {
-		return 0
+		return math.Inf(-1)
 	}
 	return docs.Documents[docs.Index].Score
 }
@@ -47,7 +48,7 @@ func (docs *Documents) IsEmpty() bool {
 	return docs.Index == len(docs.Documents)
 }
 
-func (docs *Documents) Next() {
+func (docs *Documents) MoveToNext() {
 	docs.Index++
 }
 
@@ -113,7 +114,7 @@ func TestElasticDocuments(t *testing.T) {
 			return
 		}
 		lastdoc = document
-		documents.Next()
+		documents.MoveToNext()
 		queue.Fix(0)
 	}
 	if count != 0 {

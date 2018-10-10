@@ -128,13 +128,6 @@ type Documents struct {
     Index     int
 }
 
-func NewDocuments(docs ...*Document) *Documents {
-    return &Documents{
-        Index:     0,
-        Documents: docs,
-    }
-}
-
 func (docs *Documents) GetDocument() *Document {
     if docs.IsEmpty() {
         return nil
@@ -144,7 +137,7 @@ func (docs *Documents) GetDocument() *Document {
 
 func (docs *Documents) GetScore() float64 {
     if docs.IsEmpty() {
-        return 0
+        return math.Inf(-1)
     }
     return docs.Documents[docs.Index].Score
 }
@@ -153,7 +146,7 @@ func (docs *Documents) IsEmpty() bool {
     return docs.Index == len(docs.Documents)
 }
 
-func (docs *Documents) Next() {
+func (docs *Documents) MoveToNext() {
     docs.Index++
 }
 
@@ -173,7 +166,7 @@ for {
         break
     }
     results = append(results, document)
-    documents.Next()
+    documents.MoveToNext()
     queue.Fix(0)
 }
 ```
