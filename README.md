@@ -97,7 +97,7 @@ When `queue.Push()` is used, it pushes the element
 located at `queue.GetLength()` in `slice` to the queue
 rather than taking an element as parameters.
 Similarly, when `queue.Pop()` is used, it pops the first element out of queue
-and puts the element to the position `queue.GetLength()` in `slice`, 
+and puts the element to the position `queue.GetLength()` in `slice`,
 rather than returning the poped element.
 When an element located at `index` is updated in `slice`,
 the user need to invoke `queue.Fix(index)` to update the queue.
