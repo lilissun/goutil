@@ -107,7 +107,8 @@ and puts the element to the position `queue.GetLength()` in `slice`,
 rather than returning the poped element.
 When an element located at `index` is updated in `slice`,
 the user need to invoke `queue.Fix(index)` to update the queue.
-For example, the following code findings the document with kth largest score. 
+For example, the following code finds the document with kth largest score.
+(The document with kth largest score is held at `documents[0]`)
 
 ```go
 queue := NewPriorityQueue(
