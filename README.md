@@ -62,7 +62,7 @@ func (pq *PriorityQueue) Update(item *Item, value string, priority int) {
 }
 ```
 
-It is better than the official implementation in the sense that
+This `PriorityQueue` implementation is better than the official one in the sense that
 the users do not need to define a custom type with `heap.Interface`.
 Meanwhile, the comparison function and its targets is defined
 based on the actual type held in `slice`.
