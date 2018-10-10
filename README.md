@@ -70,10 +70,16 @@ Thus, we do not need to rewrite the whole `PriorityQueue`
 repeatedly for different element types.
 
 On the other hand, this `PriorityQueue` implementation is not self-contained.
+The memory space of `slice` must be pre-allocated before the initialization of the queue.
+It also means that `slice` cannot be dynamically extended to a larger size after the queue is built.
+(In this case, it is recommended to create a new `PriorityQueue` with the extended `slice`.)
 When `queue.Push()` is used, it pushes the element
-located at `queue.GetLength()` in `slice` to the queue.
+located at `queue.GetLength()` in `slice` to the queue
+rather than taking an element as parameters.
 Similarly, when `queue.Pop()` is used, it pops the first element out of queue
-and puts the element to the position `queue.GetLength()` in `slice`.
-Moreover, its memory space must be pre-allocated before the initialization of the queue.
+and puts the element to the position `queue.GetLength()` in `slice`, 
+rather than returning the poped element.
+When an element located at `index` is updated in `slice`,
+the user need to invoke `queue.Fix(index)` to update the queue.
 
 Heap must be used with lock in multi-threading context.
