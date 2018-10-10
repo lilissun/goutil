@@ -1,7 +1,6 @@
 package goutil
 
 import (
-	"encoding/json"
 	"sort"
 	"testing"
 )
@@ -77,6 +76,7 @@ var (
 
 func TestElasticDocuments(t *testing.T) {
 	batches := make([]*Documents, 0, len(elastic))
+	var count int
 	for _, partition := range elastic {
 		documents := make([]*Document, 0, len(partition))
 		for id, score := range partition {
@@ -88,6 +88,7 @@ func TestElasticDocuments(t *testing.T) {
 				return documents[i].Score > documents[j].Score
 			},
 		)
+		count += len(documents)
 		batches = append(batches, NewDocuments(documents...))
 	}
 	queue := NewPriorityQueue(
@@ -104,6 +105,7 @@ func TestElasticDocuments(t *testing.T) {
 			t.Logf("No More Document")
 			break
 		}
+		count--
 		t.Logf("Document (%d) Score (%f)", document.ID, document.Score)
 		if lastdoc != nil && lastdoc.Score < document.Score {
 			t.Errorf("Document (%d) and (%d) are in Wrong Order",
@@ -114,12 +116,10 @@ func TestElasticDocuments(t *testing.T) {
 		documents.Next()
 		queue.Fix(0)
 	}
-	data, err := json.Marshal(batches)
-	if err != nil {
-		t.Errorf("JSON Marshal Error (%s)", err)
+	if count != 0 {
+		t.Errorf("Documents are not Fully Listed, left: %d", count)
 		return
 	}
-	t.Logf("%s", data)
 }
 
 func TestPrioritySort(t *testing.T) {
@@ -132,7 +132,7 @@ func TestPrioritySort(t *testing.T) {
 	queue := NewPriorityQueue(
 		documents, len(documents),
 		func(i, j int) bool {
-			return documents[i].Score > documents[j].Score
+			return documents[i].Score < documents[j].Score
 		},
 	)
 	for queue.Pop() {
@@ -141,7 +141,7 @@ func TestPrioritySort(t *testing.T) {
 	for index, document := range documents {
 		t.Logf("[%02d] Document (%d) Score (%f)",
 			index+1, document.ID, document.Score)
-		if lastdoc != nil && lastdoc.Score > document.Score {
+		if lastdoc != nil && lastdoc.Score < document.Score {
 			t.Errorf("Document (%d) and (%d) are in Wrong Order",
 				lastdoc.ID, document.ID)
 			return
@@ -160,7 +160,7 @@ func TestPriorityPushSort(t *testing.T) {
 	queue := NewPriorityQueue(
 		documents, len(documents)/2,
 		func(i, j int) bool {
-			return documents[i].Score > documents[j].Score
+			return documents[i].Score < documents[j].Score
 		},
 	)
 	for queue.Push() {
@@ -171,11 +171,45 @@ func TestPriorityPushSort(t *testing.T) {
 	for index, document := range documents {
 		t.Logf("[%02d] Document (%d) Score (%f)",
 			index+1, document.ID, document.Score)
-		if lastdoc != nil && lastdoc.Score > document.Score {
+		if lastdoc != nil && lastdoc.Score < document.Score {
 			t.Errorf("Document (%d) and (%d) are in Wrong Order",
 				lastdoc.ID, document.ID)
 			return
 		}
 		lastdoc = document
+	}
+}
+
+func TestPriorityTopKth(t *testing.T) {
+	var orders []*Document
+	for _, partition := range elastic {
+		for id, score := range partition {
+			orders = append(orders, NewDocument(id, score))
+		}
+	}
+	sort.Slice(orders, func(i, j int) bool { return orders[i].Score > orders[j].Score })
+	for _, k := range []int{1, 2, 4, 5, 7, 8} {
+		var documents []*Document
+		for _, partition := range elastic {
+			for id, score := range partition {
+				documents = append(documents, NewDocument(id, score))
+			}
+		}
+		queue := NewPriorityQueue(
+			documents[:k], k,
+			func(i, j int) bool {
+				return documents[i].Score < documents[j].Score
+			},
+		)
+		for _, document := range documents[k:] {
+			if document.Score > documents[0].Score {
+				documents[0] = document
+				queue.Fix(0)
+			}
+		}
+		if documents[0].ID != orders[k-1].ID {
+			t.Errorf("The Top (%d) Document does not have ID (%d)", k, orders[k].ID)
+			return
+		}
 	}
 }

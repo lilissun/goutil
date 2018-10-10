@@ -70,6 +70,30 @@ Meanwhile, the comparison function and its targets is defined
 based on the actual type held in `slice`.
 Thus, we do not need to rewrite the whole `PriorityQueue`
 repeatedly for different element types.
+For example, the following code heap-sort `documents` in accending order.
+
+```go
+type Document struct {
+    ID    int64
+    Score float64
+}
+
+func NewDocument(id int64, score float64) *Document {
+    return &Document{
+        ID:    id,
+        Score: score,
+    }
+}
+
+queue := NewPriorityQueue(
+    documents, len(documents),
+    func(i, j int) bool {
+        return documents[i].Score > documents[j].Score
+    },
+)
+for queue.Pop() {
+}
+```
 
 On the other hand, our `PriorityQueue` implementation is not self-contained.
 The memory space of `slice` must be pre-allocated before the initialization of the queue.
@@ -83,5 +107,21 @@ and puts the element to the position `queue.GetLength()` in `slice`,
 rather than returning the poped element.
 When an element located at `index` is updated in `slice`,
 the user need to invoke `queue.Fix(index)` to update the queue.
+For example, the following code findings the document with kth largest score. 
+
+```go
+queue := NewPriorityQueue(
+    documents[:k], k,
+    func(i, j int) bool {
+        return documents[i].Score < documents[j].Score
+    },
+)
+for _, document := range documents[k:] {
+    if document.Score > documents[0].Score {
+        documents[0] = document
+        queue.Fix(0)
+    }
+}
+```
 
 Heap must be used with lock in multi-threading context.
