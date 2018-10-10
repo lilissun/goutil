@@ -78,13 +78,7 @@ type Document struct {
     Score float64
 }
 
-func NewDocument(id int64, score float64) *Document {
-    return &Document{
-        ID:    id,
-        Score: score,
-    }
-}
-
+// documents is []*Document
 queue := NewPriorityQueue(
     documents, len(documents),
     func(i, j int) bool {
@@ -111,6 +105,7 @@ For example, the following code finds the document with kth largest score.
 (The document with kth largest score is held at `documents[0]` at the end of the program.)
 
 ```go
+// documents is []*Document
 queue := NewPriorityQueue(
     documents[:k], k,
     func(i, j int) bool {
@@ -122,6 +117,64 @@ for _, document := range documents[k:] {
         documents[0] = document
         queue.Fix(0)
     }
+}
+```
+
+The following is an example for k-Way Merge algorithm.
+
+```go
+type Documents struct {
+    Documents []*Document
+    Index     int
+}
+
+func NewDocuments(docs ...*Document) *Documents {
+    return &Documents{
+        Index:     0,
+        Documents: docs,
+    }
+}
+
+func (docs *Documents) GetDocument() *Document {
+    if docs.IsEmpty() {
+        return nil
+    }
+    return docs.Documents[docs.Index]
+}
+
+func (docs *Documents) GetScore() float64 {
+    if docs.IsEmpty() {
+        return 0
+    }
+    return docs.Documents[docs.Index].Score
+}
+
+func (docs *Documents) IsEmpty() bool {
+    return docs.Index == len(docs.Documents)
+}
+
+func (docs *Documents) Next() {
+    docs.Index++
+}
+
+// batches is []*Documents
+queue := NewPriorityQueue(
+    batches, len(batches),
+    func(i, j int) bool {
+        return batches[i].GetScore() > batches[j].GetScore()
+    },
+)
+
+var results []*Documents
+for {
+    documents := batches[0]
+    document := documents.GetDocument()
+    if document == nil {
+        break
+    }
+    results = append(results, document)
+    documents.Next()
+    queue.Fix(0)
 }
 ```
 
