@@ -115,8 +115,8 @@ func (queue *PriorityQueue) Push() bool {
 	if queue.IsFull() {
 		return false
 	}
-	queue.up(queue.length)
 	queue.length++
+	queue.up(queue.length - 1)
 	return true
 }
 
