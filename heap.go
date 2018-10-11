@@ -102,9 +102,6 @@ func (queue *PriorityQueue) Pop() bool {
 		return false
 	}
 	queue.length--
-	if queue.IsEmpty() {
-		return true
-	}
 	queue.swap(0, queue.length)
 	queue.down(0)
 	return true

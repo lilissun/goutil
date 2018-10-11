@@ -148,7 +148,7 @@ func NewDocuments(documents ...*Document) *Documents {
 }
 
 func (docs *Documents) Push(doc *Document) {
-	if docs.Queue.Length() < docs.Queue.Capacity() {
+	if docs.Queue.IsFull() == false {
 		docs.Documents[docs.Queue.Length()] = doc
 		docs.Queue.Push()
 		return
@@ -172,7 +172,7 @@ func (docs *Documents) Pop() *Document {
 }
 
 func (docs *Documents) Top() *Document {
-	if len(docs.Documents) != 0 {
+	if docs.Queue.IsEmpty() == false {
 		return docs.Documents[0]
 	}
 	return nil
