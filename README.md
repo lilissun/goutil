@@ -130,8 +130,8 @@ When the size of slice (storage space) must be extendable,
 our `PriorityQueue` can support it by creating a new `PriorityQueue` with the extended `slice`.
 For instance, the following code defines Documents that
 support `Push` and `Pop` with dynamic size.
-Actually, if dynamic size is a requirement,
-our `PriorityQueue` is not very appealing against the official implementation.
+Frankly speaking, if dynamic size is a requirement,
+our `PriorityQueue` is similar comparing with the official implementation.
 
 ```go
 type Documents struct {
@@ -242,4 +242,6 @@ for {
 }
 ```
 
-Heap must be used with lock in multi-threading context.
+Our `PriorityQueue` must be used with lock in multi-threading context.
+In general, it is more convenient to use our `PriorityQueue`,
+if you know what you are doing.
