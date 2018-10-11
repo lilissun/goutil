@@ -29,6 +29,9 @@ func NewPriorityQueue(
 	if length > capacity {
 		length = capacity
 	}
+	if length < 0 {
+		length = 0
+	}
 	swap := reflect.Swapper(slice)
 	queue := &PriorityQueue{
 		slice:    slice,
