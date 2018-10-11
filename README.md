@@ -64,8 +64,15 @@ func (pq *PriorityQueue) Update(item *Item, value string, priority int) {
 }
 ```
 
-Our `PriorityQueue` implementation is better than the official one in the sense that
-the users do not need to define a custom type with `heap.Interface`.
+The official implementation is flexible in the sense that
+it is basically a type defined as an array of the elements.
+However, this method of implementing Priority Queue requires
+reimplementating everything for every different types
+that we need to store in the priority queue.
+Thus, a lot of copy and paste work.
+
+Our `PriorityQueue` implementation is better than the official one
+because the users do not need to define a custom type implementing `heap.Interface`.
 Meanwhile, the comparison function and its targets is defined
 based on the actual type held in `slice`.
 Thus, we do not need to rewrite the whole `PriorityQueue`
@@ -89,10 +96,9 @@ for queue.Pop() {
 }
 ```
 
-On the other hand, our `PriorityQueue` implementation is not self-contained.
+On the other hand, our `PriorityQueue` does not support the push and pop in the normal way.
 The memory space of `slice` must be pre-allocated before the initialization of the queue.
 It also means that `slice` cannot be dynamically extended to a larger size after the queue is built.
-(In this case, it is recommended to create a new `PriorityQueue` with the extended `slice`.)
 When `queue.Push()` is used, it pushes the element
 located at `queue.GetLength()` in `slice` to the queue
 rather than taking an element as parameters.
@@ -120,37 +126,101 @@ for _, document := range documents[k:] {
 }
 ```
 
-The following is an example for k-Way Merge algorithm.
+When the size of slice (storage space) must be extendable,
+our `PriorityQueue` can support it by creating a new `PriorityQueue` with the extended `slice`.
+For instance, the following code defines Documents that
+support `Push` and `Pop` with dynamic size.
+Actually, if dynamic size is a requirement,
+our `PriorityQueue` is not very appealing against the official implementation.
 
 ```go
 type Documents struct {
     Documents []*Document
+    Queue     *PriorityQueue
+}
+
+func NewDocuments(documents ...*Document) *Documents {
+    docs := &Documents{Documents: documents}
+    docs.Queue = NewPriorityQueue(
+        docs.Documents, len(docs.Documents),
+        func(i, j int) bool { return docs.Documents[i].Score > docs.Documents[j].Score },
+    )
+    return docs
+}
+
+func (docs *Documents) Push(doc *Document) {
+    if docs.Queue.Length() < docs.Queue.Capacity() {
+        docs.Documents[docs.Queue.Length()] = doc
+        docs.Queue.Push()
+        return
+    }
+    documents := docs.Documents
+    length := docs.Queue.Length()
+    docs.Documents = make([]*Document, 2*length+1)
+    copy(docs.Documents, documents)
+    docs.Documents[length] = doc
+    docs.Queue = NewPriorityQueue(
+        docs.Documents, length+1,
+        func(i, j int) bool { return docs.Documents[i].Score > docs.Documents[j].Score },
+    )
+}
+
+func (docs *Documents) Pop() *Document {
+    if docs.Queue.Pop() {
+        return docs.Documents[docs.Queue.Length()]
+    }
+    return nil
+}
+
+func (docs *Documents) Top() *Document {
+    if len(docs.Documents) != 0 {
+        return docs.Documents[0]
+    }
+    return nil
+}
+
+func (docs *Documents) Update(doc *Document, index int) bool {
+    if index >= 0 && index < docs.Queue.Length() {
+        docs.Documents[index] = doc
+        docs.Queue.Fix(index)
+        return true
+    }
+    return false
+}
+```
+
+The following is an other example for k-Way Merge algorithm.
+
+```go
+type Batch struct {
+    Documents []*Document
     Index     int
 }
 
-func (docs *Documents) GetDocument() *Document {
-    if docs.IsEmpty() {
+func (batch *Batch) GetDocument() *Document {
+    if batch.IsEmpty() {
         return nil
     }
-    return docs.Documents[docs.Index]
+    return batch.Documents[batch.Index]
 }
 
-func (docs *Documents) GetScore() float64 {
-    if docs.IsEmpty() {
+func (batch *Batch) GetScore() float64 {
+    if batch.IsEmpty() {
         return math.Inf(-1)
     }
-    return docs.Documents[docs.Index].Score
+    return batch.Documents[batch.Index].Score
 }
 
-func (docs *Documents) IsEmpty() bool {
-    return docs.Index == len(docs.Documents)
+func (batch *Batch) IsEmpty() bool {
+    return batch.Index == len(batch.Documents)
 }
 
-func (docs *Documents) MoveToNext() {
-    docs.Index++
+func (batch *Batch) MoveToNext() {
+    batch.Index++
 }
 
-// batches is []*Documents
+
+// batches is []*Batch
 // and batches[i].Documents are sorted by score
 queue := NewPriorityQueue(
     batches, len(batches),
