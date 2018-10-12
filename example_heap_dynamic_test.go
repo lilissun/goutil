@@ -82,7 +82,7 @@ func ExamplePriorityQueue_dynamicSize() {
 	//    12
 	//   9  5
 
-	// then, more values into the queue
+	// then, we push more values into the queue
 	// i.e.,[0, 3, 7, 4]
 	for _, value := range []int{0, 3, 7, 4} {
 		queue.Push(value)
