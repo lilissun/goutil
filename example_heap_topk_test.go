@@ -6,7 +6,7 @@ import (
 	"github.com/lilissun/goutil"
 )
 
-func ExamplePriorityQueue_top_k() {
+func ExamplePriorityQueue_topK() {
 	// This example demonstrate how to use Priority Queue
 	// to find the kth largest number in a list
 
