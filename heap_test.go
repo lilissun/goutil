@@ -1,9 +1,11 @@
-package goutil
+package goutil_test
 
 import (
 	"math"
 	"sort"
 	"testing"
+
+	"github.com/lilissun/goutil"
 )
 
 type Document struct {
@@ -48,7 +50,7 @@ func TestPrioritySort(t *testing.T) {
 			documents = append(documents, NewDocument(id, score))
 		}
 	}
-	queue := NewPriorityQueue(
+	queue := goutil.NewPriorityQueue(
 		documents, len(documents),
 		func(i, j int) bool {
 			return documents[i].Score < documents[j].Score
@@ -76,7 +78,7 @@ func TestPriorityPushSort(t *testing.T) {
 			documents = append(documents, NewDocument(id, score))
 		}
 	}
-	queue := NewPriorityQueue(
+	queue := goutil.NewPriorityQueue(
 		documents, len(documents)/2,
 		func(i, j int) bool {
 			return documents[i].Score < documents[j].Score
@@ -114,7 +116,7 @@ func TestPriorityTopKth(t *testing.T) {
 				documents = append(documents, NewDocument(id, score))
 			}
 		}
-		queue := NewPriorityQueue(
+		queue := goutil.NewPriorityQueue(
 			documents[:k], k,
 			func(i, j int) bool {
 				return documents[i].Score < documents[j].Score
@@ -135,12 +137,12 @@ func TestPriorityTopKth(t *testing.T) {
 
 type Documents struct {
 	Documents []*Document
-	Queue     *PriorityQueue
+	Queue     *goutil.PriorityQueue
 }
 
 func NewDocuments(documents ...*Document) *Documents {
 	docs := &Documents{Documents: documents}
-	docs.Queue = NewPriorityQueue(
+	docs.Queue = goutil.NewPriorityQueue(
 		docs.Documents, len(docs.Documents),
 		func(i, j int) bool { return docs.Documents[i].Score > docs.Documents[j].Score },
 	)
@@ -158,7 +160,7 @@ func (docs *Documents) Push(doc *Document) {
 	docs.Documents = make([]*Document, 2*length+1)
 	copy(docs.Documents, documents)
 	docs.Documents[length] = doc
-	docs.Queue = NewPriorityQueue(
+	docs.Queue = goutil.NewPriorityQueue(
 		docs.Documents, length+1,
 		func(i, j int) bool { return docs.Documents[i].Score > docs.Documents[j].Score },
 	)
@@ -269,7 +271,7 @@ func TestPriorityKWayMerge(t *testing.T) {
 		count += len(documents)
 		batches = append(batches, NewBatch(documents...))
 	}
-	queue := NewPriorityQueue(
+	queue := goutil.NewPriorityQueue(
 		batches, len(batches),
 		func(i, j int) bool {
 			return batches[i].GetScore() > batches[j].GetScore()
