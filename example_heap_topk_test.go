@@ -6,10 +6,10 @@ import (
 	"github.com/lilissun/goutil"
 )
 
-// This example demonstrate how to use Priority Queue
-// to find the kth largest number in a list
-
 func ExamplePriorityQueue_top_k() {
+	// This example demonstrate how to use Priority Queue
+	// to find the kth largest number in a list
+
 	// slice is the underlying storage space for values
 	// queue is initialized with slice with size of k
 	slice := []int{5, 9, 12, 0, 3, 7, 4}
