@@ -9,7 +9,7 @@ import (
 // This example demonstrate how to use Priority Queue
 // to sort elements
 
-func Example_priorityQueue_sort() {
+func ExamplePriorityQueue_sort() {
 	// slice is the underlying storage space for values
 	// queue is initialized with slice
 	// with half of the values included, i.e., [5, 9, 12]
