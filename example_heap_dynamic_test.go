@@ -25,6 +25,11 @@ func NewValuePriorityQueue(slice ...int) *ValuePriorityQueue {
 	return queue
 }
 
+// when an element is pushed to the queue
+// we need to ensure that it is not full
+// otherwise, we must enlarge its capacity
+// by allocating a new slice with double its size
+// notice that the slice and queue are updated at the same time
 func (queue *ValuePriorityQueue) Push(value int) {
 	if queue.queue.IsFull() {
 		slice := queue.Slice
@@ -42,6 +47,7 @@ func (queue *ValuePriorityQueue) Push(value int) {
 	queue.queue.Push()
 }
 
+// when a value is poped, we need to ensure that it is not empty
 func (queue *ValuePriorityQueue) Pop() (int, bool) {
 	if queue.queue.Pop() {
 		return queue.Slice[queue.queue.Length()], true
@@ -49,6 +55,7 @@ func (queue *ValuePriorityQueue) Pop() (int, bool) {
 	return 0, false
 }
 
+// when the top value is enquired, we need to ensure it is not empty
 func (queue *ValuePriorityQueue) Top() (int, bool) {
 	if queue.queue.IsEmpty() {
 		return 0, false
@@ -56,6 +63,8 @@ func (queue *ValuePriorityQueue) Top() (int, bool) {
 	return queue.Slice[0], true
 }
 
+// when a value is updated at the index,
+// we additionally ask the queue to fix the index
 func (queue *ValuePriorityQueue) Update(value int, index int) bool {
 	if index >= 0 && index < queue.queue.Length() {
 		queue.Slice[index] = value
@@ -65,9 +74,7 @@ func (queue *ValuePriorityQueue) Update(value int, index int) bool {
 	return false
 }
 
-func ExamplePriorityQueue_dynamicPush() {
-
-	// slice is the underlying storage space for values
+func ExamplePriorityQueue_dynamicSize() {
 	// queue is initialized with a slice [5, 9, 12]
 	queue := NewValuePriorityQueue(5, 9, 12)
 	fmt.Println(queue.Slice)
@@ -75,7 +82,7 @@ func ExamplePriorityQueue_dynamicPush() {
 	//    12
 	//   9  5
 
-	// firstly, we push the rest of the values into the queue
+	// then, more values into the queue
 	// i.e.,[0, 3, 7, 4]
 	for _, value := range []int{0, 3, 7, 4} {
 		queue.Push(value)
@@ -87,8 +94,7 @@ func ExamplePriorityQueue_dynamicPush() {
 	// 0  3  5  4
 
 	// then, we pop all the elements out of the queue
-	// so in every round, the largest number in the queue
-	// is put at the end of the queue
+	// in a descending order
 	slice := make([]int, 0, len(queue.Slice))
 	for {
 		value, more := queue.Pop()
